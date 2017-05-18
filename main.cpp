@@ -10,42 +10,47 @@ private:
     
 public:
     // дефолтный конструктор, для чтения с консоли
-    Point(): x(0), y(0) {
-        dx = 1e-5;
-        dy = 1e-5;
-    }
+    Point(): x(0), y(0) {}
     
-    Point(const double & _x, const double & _y): x(_x), y(_y) {
-        dx = 1e-5;
-        dy = 1e-5;
-    }
+    Point(const double & _x, const double & _y): x(_x), y(_y) {}
     
+    // конструктор копирования
     Point(const Point & pnt);
     
+    // оператор присваивания
     Point & operator =(const Point & pnt);
     
+    // операции
     Point operator +(const Point & pnt) const;
     Point operator -(const Point & pnt) const;
     
+    // сокращенное присваивание
     Point & operator +=(const Point & pnt);
     Point & operator -=(const Point & pnt);
     
+    // инекременты
     Point & operator ++(); // префиксный
     const Point operator ++(int); // постфиксный
     
+    // декрименты
     Point & operator --(); // префиксный
     const Point operator --(int); // постфиксный
     
+    // сеттеры
     void setX(const double & _x);
     void setY(const double & _y);
     
+    // геттеры
     double getX() const;
     double getY() const;
     
+    // операторы ввывода
     friend istream & operator >>(istream & in, Point & pnt);
     friend ostream & operator <<(ostream & in, const Point & pnt);
     
 };
+
+// POINT REALESATION
 
 Point::Point(const Point & pnt) {
     this->x = pnt.x;
@@ -83,8 +88,8 @@ Point & Point::operator -=(const Point & pnt) {
 }
 
 Point & Point::operator ++() {
-    this->x += dx;
-    this->y += dy;
+    this->x += Point::dx;
+    this->y += Point::dy;
     return *this;
 }
 
@@ -95,8 +100,8 @@ const Point Point::operator ++(int n) {
 }
 
 Point & Point::operator --() {
-    this->x -= dx;
-    this->y -= dy;
+    this->x -= Point::dx;
+    this->y -= Point::dy;
     return *this;
 }
 
@@ -133,22 +138,29 @@ ostream & operator <<(ostream & out, const Point & pnt) {
     return out;
 }
 
+
 class Figura {
+    // protected - потому что мы будем наследовать от этого класса фигуры
+    // у которых будут общие поля
 protected:
     
     Point cg, cz;
     
 public:
     
+    // конструктор
     Figura(const Point & p): cg(p), cz(p) {};
     
+    // конструктор копирования
     Figura(const Figura & _figura) {
         this->cg = _figura.cg;
         this->cz = _figura.cz;
     };
     
+    // оператор присваивания
     Figura & operator =(const Figura & _figura);
     
+    // виртуальный метод
     virtual void show() {};
     
     void hide() {};
@@ -159,8 +171,13 @@ public:
     
     void trek() {};
     
+    // обязательно должен быть виртуальный деструктор
+    // чтобы при полиморфизме вызывался деструктор того класса
+    // которым объект является на самом деле
     virtual ~Figura() {};
 };
+
+// FIGURA REALESATION
 
 Figura & Figura::operator =(const Figura & _figura) {
     if (this == &_figura)
@@ -180,6 +197,8 @@ private:
     
 public:
     
+    // в списке инициализации можно указывать конструкторы базвого класса
+    // в нашем случаи будет вызвать конструктор Figura и заполнять поля точек
     Krug(const Point & _p, const double & _r): Figura(_p), r(_r) {};
     
     Krug(const Krug & kr);
@@ -195,17 +214,21 @@ public:
     ~Krug() {};
 };
 
+// KRUG REALESATION
+
 Krug::Krug(const Krug & kr): Figura(kr.cg) {
     this->r = kr.r;
 }
 
 Krug & Krug::operator =(const Krug & kr) {
+    // проверка на самоприсваивание
     if (this == &kr)
         return *this;
     
     this->cz = kr.cz;
     this->cg = kr.cg;
     this->r = kr.r;
+    
     return *this;
 }
 
@@ -243,6 +266,8 @@ public:
     
 };
 
+// ELLIPSE REALESATION
+
 Ellipse::Ellipse(const Ellipse & ellipse): Figura(ellipse.cz), rx(ellipse.rx), ry(ellipse.ry) {}
 
 Ellipse & Ellipse::operator =(const Ellipse & ellipse) {
@@ -274,6 +299,7 @@ double Ellipse::getRy() const {
 }
 
 
+
 class Box: public Figura {
 private:
     
@@ -298,6 +324,8 @@ public:
     ~Box() {};
     
 };
+
+// BOX REALESATION
 
 Box::Box(const Box & box): Figura(box.cg), a(box.a), b(box.b) {}
 
@@ -329,11 +357,11 @@ double Box::getB() const {
     return this->b;
 }
 
+// статические поля должны обязательно инициализированны глобально
+double Point::dx = 1e-5;
+double Point::dy = 1e-5;
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    Point p;
-    Figura f(p);
-    f.hide();
+    
     return 0;
 }
